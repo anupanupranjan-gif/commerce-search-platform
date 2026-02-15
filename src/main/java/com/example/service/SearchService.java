@@ -7,6 +7,7 @@ import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.elasticsearch._types.query_dsl.*;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.RangeQuery;
+import co.elastic.clients.json.JsonData;
 import com.example.datagenerator.Product;
 import org.springframework.stereotype.Service;
 
@@ -33,14 +34,14 @@ public class SearchService {
         // Build filter queries
         Query brandQuery = brandFilter != null ? TermQuery.of(t -> t.field("brand").value(brandFilter))._toQuery() : null;
         Query categoryQuery = categoryFilter != null ? TermQuery.of(t -> t.field("category").value(categoryFilter))._toQuery() : null;
-      /*  Query priceQuery = (minPrice != null || maxPrice != null) ?
-                RangeQuery.of(r -> r
-                        .field("price") // The field to query
-                        .gte(minPrice) // Greater than or equal to 50
-                        .lte(maxPrice) // Less than or equal to 100
-                )._toQuery(): null;*/
-
-
+       Query priceQuery = (minPrice != null || maxPrice != null) ?
+               RangeQuery.of(r -> r
+                       .number(n -> n // Use the number() method
+                               .field("price")
+                               .gte(minPrice)
+                               .lte(maxPrice)
+                       )
+               )._toQuery(): null;
 
         // Combine filters
         BoolQuery.Builder boolQuery = new BoolQuery.Builder().must(keywordQuery);
