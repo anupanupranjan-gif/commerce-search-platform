@@ -15,7 +15,7 @@ public class DataExporter {
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
-        mapper.writeValue(new File("products.json"), products);
+        mapper.writeValue(new File("src/main/resources/products.json"), products);
 
         System.out.println("Generated 50,000 products.");
     }

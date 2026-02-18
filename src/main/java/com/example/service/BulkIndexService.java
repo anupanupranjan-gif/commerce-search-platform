@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 @Service
@@ -25,8 +26,10 @@ public class BulkIndexService {
     }
 
     public void bulkIndexProducts(String filePath) throws IOException {
-        List<Product> products = List.of(mapper.readValue(new File(filePath), Product[].class));
+        //List<Product> products = List.of(mapper.readValue(new File(filePath), Product[].class));
 
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(filePath);
+        List<Product> products = List.of(mapper.readValue(inputStream, Product[].class));
         BulkRequest.Builder bulk = new BulkRequest.Builder();
 
         for (Product p : products) {

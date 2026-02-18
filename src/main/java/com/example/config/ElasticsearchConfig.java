@@ -10,28 +10,31 @@ import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.factory.annotation.Value;
+
+import java.net.URI;
 
 @Configuration
 public class ElasticsearchConfig {
 
+    @Value("${spring.elasticsearch.uris}")
+    private String elasticsearchUri;
+
     @Bean
     public ElasticsearchClient elasticsearchClient() {
-
-        // Create custom ObjectMapper
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-
-        // Disable timestamps
         objectMapper.findAndRegisterModules();
 
         JacksonJsonpMapper mapper = new JacksonJsonpMapper(objectMapper);
 
+        URI uri = URI.create(elasticsearchUri);
+
         RestClient restClient = RestClient.builder(
-                new HttpHost("localhost", 9200)
+                new HttpHost(uri.getHost(), uri.getPort(), uri.getScheme())
         ).build();
 
-        ElasticsearchTransport transport =
-                new RestClientTransport(restClient, mapper);
+        ElasticsearchTransport transport = new RestClientTransport(restClient, mapper);
 
         return new ElasticsearchClient(transport);
     }
